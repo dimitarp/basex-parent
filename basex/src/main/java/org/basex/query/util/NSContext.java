@@ -1,0 +1,110 @@
+package org.basex.query.util;
+
+import static org.basex.query.QueryText.*;
+import static org.basex.query.util.Err.*;
+import static org.basex.util.Token.*;
+
+import org.basex.query.*;
+import org.basex.util.*;
+
+/**
+ * This class references all statically known namespaces.
+ *
+ * @author BaseX Team 2005-12, BSD License
+ * @author Christian Gruen
+ */
+public final class NSContext {
+  /** Static namespaces, containing prefixes and URIs. */
+  private final Atts ns = new Atts();
+  /** Dynamically added namespaces. */
+  private Atts stack;
+
+  /**
+   * Validates and adds the specified namespace at parsing time.
+   * @param pref namespace prefix
+   * @param uri namespace URI
+   * @param ii input info
+   * @throws QueryException query exception
+   */
+  public void add(final byte[] pref, final byte[] uri, final InputInfo ii)
+      throws QueryException {
+
+    if(eq(pref, XML, XMLNS)) BINDXML.thrw(ii, pref);
+    if(eq(uri, XMLURI)) BINDXMLURI.thrw(ii, uri, XML);
+    if(eq(uri, XMLNSURI)) BINDXMLURI.thrw(ii, uri, XMLNS);
+    ns.add(pref, uri);
+  }
+
+  /**
+   * Deletes the specified namespace at parsing time.
+   * @param pref namespace prefix
+   */
+  public void delete(final byte[] pref) {
+    for(int s = ns.size() - 1; s >= 0; s--) {
+      if(eq(pref, ns.name(s))) ns.delete(s);
+    }
+  }
+
+  /**
+   * Finds the namespace URI for the specified prefix, if it is found
+   * in statically declared namespaces.
+   * @param pref prefix of the namespace
+   * @return uri or {@code null}
+   */
+  public byte[] staticURI(final byte[] pref) {
+    for(int s = ns.size() - 1; s >= 0; s--) {
+      if(eq(ns.name(s), pref)) return ns.value(s);
+    }
+    return null;
+  }
+
+  /**
+   * Returns the namespace URI for the specified prefix, if it is either
+   * found in the dynamic, static or predefined namespaces.
+   * @param pref prefix of the namespace
+   * @return namespace URI or {@code null}
+   */
+  public byte[] uri(final byte[] pref) {
+    if(stack != null) {
+      for(int s = stack.size() - 1; s >= 0; s--) {
+        if(eq(stack.name(s), pref)) return stack.value(s);
+      }
+    }
+    final byte[] uri = staticURI(pref);
+    return uri == null ? NSGlobal.uri(pref) : uri.length == 0 ? null : uri;
+  }
+
+  /**
+   * Returns the number of dynamic namespaces.
+   * @return namespaces
+   */
+  public int size() {
+    return stack().size();
+  }
+
+  /**
+   * Sets the number of dynamic namespaces.
+   * @param s namespaces
+   */
+  public void size(final int s) {
+    stack().size(s);
+  }
+
+  /**
+   * Adds a namespace to the namespace stack.
+   * @param pref namespace prefix
+   * @param uri namespace URI
+   */
+  public void add(final byte[] pref, final byte[] uri) {
+    stack().add(pref, uri);
+  }
+
+  /**
+   * Returns the namespace stack.
+   * @return stack
+   */
+  public Atts stack() {
+    if(stack == null) stack = new Atts();
+    return stack;
+  }
+}

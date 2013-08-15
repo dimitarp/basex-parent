@@ -1,0 +1,17 @@
+QT3TS RESULTS __________________________
+
+ Rate    : 0.0%
+ Total   : 26011
+ Tested  : 1
+ Wrong   : 1
+ Ignored : 26010
+
+WRONG __________________________________
+
+fn-function-lookup-020
+function-lookup(fn:QName('http://www.w3.org/2005/xpath-functions', 'base-uri'), 1)(/)
+Result: file:///D:/BaseX/code/qt3ts/fn/function-lookup/function-lookup.xml
+Expect: http://www.w3.org/fots/fn/function-lookup/function-lookup.xml
+
+CORRECT ________________________________
+
