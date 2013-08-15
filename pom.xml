@@ -215,7 +215,7 @@
     </repository>
   </distributionManagement>
   <modules>
-    <module>basex</module>
+    <module>basex-core</module>
     <module>basex-api</module>
     <module>basex-examples</module>
     <module>basex-tests</module>
